@@ -1,1 +1,1 @@
-This Github represitoire contains the code to my bachelors thesis. 
+This Github repertoire contains the code to my bachelors thesis. 
