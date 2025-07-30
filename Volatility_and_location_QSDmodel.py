@@ -533,9 +533,9 @@ class RobustQLEModel:
 def main():
 
     true_params = {
-        'omega': 0.05,
-        'gamma': 0.2,
-        'beta': 0.75,
+        'omega': 0.07, 
+        'gamma': 0.11, 
+        'beta': 0.8,
         'alpha_loss': 1,
         'c': 1.2
     }
@@ -545,7 +545,7 @@ def main():
     sim_model.params = true_params
     
     # Simulate data
-    T = 4000
+    T = 3000
     y, true_vol = sim_model.simulate(T, dist='t', df=5, noise_scale=1, seed=41)
 
     model = RobustQLEModel()
