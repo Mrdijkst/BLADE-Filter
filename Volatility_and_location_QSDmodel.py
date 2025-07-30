@@ -529,3 +529,32 @@ class RobustQLEModel:
             
             
         return y, f[1:]
+
+def main():
+
+    true_params = {
+        'omega': 0.05,
+        'gamma': 0.2,
+        'beta': 0.75,
+        'alpha_loss': 1,
+        'c': 1.2
+    }
+    
+    # Create a model with the true parameters for simulation
+    sim_model = RobustQLEModel(alpha_loss=true_params['alpha_loss'], c=true_params['c'])
+    sim_model.params = true_params
+    
+    # Simulate data
+    T = 4000
+    y, true_vol = sim_model.simulate(T, dist='t', df=5, noise_scale=1, seed=41)
+
+    model = RobustQLEModel()
+    model.fit(y)
+
+    fitted_vol = model.fitted_volatility
+
+    plt.plot(true_vol)
+    plt.plot(fitted_vol)
+    plt.show()
+    
+main()
