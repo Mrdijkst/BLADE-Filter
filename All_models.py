@@ -427,7 +427,6 @@ class RobustQLEModel:
             
             # Try again with different method if first one failed
             if method == 'Nelder-Mead':
-                print("Trying BFGS method instead...")
                 result = minimize(
                     self._qle_objective,
                     init_params,
