@@ -546,7 +546,7 @@ def main():
     
     # Simulate data
     T = 3000
-    y, true_vol = sim_model.simulate(T, dist='t', df=5, noise_scale=1, seed=41)
+    y, true_vol = sim_model.simulate(T, dist='n', df=5, noise_scale=1, seed=42)
 
     model = RobustQLEModel()
     model.fit(y)
