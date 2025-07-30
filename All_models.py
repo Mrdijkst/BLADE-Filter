@@ -35,7 +35,7 @@ class RobustQLEModel:
     
     def _rho_derivative(self, e: np.ndarray, alpha: float, c: float) -> np.ndarray:
         
-        # Handle scalar inputs by converting to numpy arrays
+        
         if np.isscalar(e):
             e = np.array([e])
             scalar_input = True
@@ -62,7 +62,7 @@ class RobustQLEModel:
     
     def _rho_second_derivative(self, e: np.ndarray, alpha: float, c: float) -> np.ndarray:
         
-        # Handle scalar inputs by converting to numpy arrays
+        
         if np.isscalar(e):
             e = np.array([e])
             scalar_input = True
@@ -305,7 +305,7 @@ class RobustQLEModel:
     def _qle_objective(self, params: np.ndarray, y: np.ndarray) -> float:
         
         try:
-            # Apply parameter constraints
+            
             param_idx = 3
             
             if self.alpha_loss is None:
@@ -335,13 +335,13 @@ class RobustQLEModel:
                 sigma2_t = np.ones_like(f)
             
             
-            # Compute derivatives of f_t with respect to parameters
+           
             df_dtheta = self._compute_derivatives(y, f, params)
             
-            # G_t(θ) = (1/T) * sum[ h_t(θ) / σ²_t(θ) * ∂f_t(θ)/∂θ ]
+            
             G_t = np.sum(h_t.reshape(-1, 1) / sigma2_t.reshape(-1, 1) * df_dtheta, axis=0) / len(y)
             
-            # The objective is to minimize ||G_t(θ)||²
+            
             obj = np.linalg.norm(G_t)
             
             return obj
@@ -352,7 +352,7 @@ class RobustQLEModel:
     def fit(self, y: np.ndarray, initial_params: Optional[Dict] = None, 
             method: str = 'Nelder-Mead', maxiter: int = 2000) -> Dict:
         
-        # Set default initial parameters if not provided
+        
         if initial_params is None:
             if self.model_type == 'volatility':
                     initial_params = {
@@ -436,7 +436,7 @@ class RobustQLEModel:
                     options={'maxiter': maxiter}
                 )
         
-        # Store parameters
+        
         self.params = {name: val for name, val in zip(self.param_names, result.x)}
         
         # Compute fitted volatility
@@ -496,7 +496,7 @@ class RobustQLEModel:
         else:
             c = self.c
         
-        # Initialize arrays
+       
         y = np.zeros(T)
         f = np.zeros(T+1)
         f[0] = omega / (1 - beta)  # Start at unconditional variance
@@ -509,24 +509,24 @@ class RobustQLEModel:
             
         # Generate data
         for t in range(T):
-            # Generate return
+            
             if self.model_type == 'volatility':
-                # Generate return with time-varying volatility
+               
                 y[t] = np.sqrt(f[t]) * eps[t]
                 e_t = y[t]**2 - f[t]
             else:  # location
-                # Generate observation with time-varying mean
+                
                 y[t] = f[t] + eps[t] * noise_scale
-                # Compute the score
+               
                 e_t = y[t] - f[t]
             
-            # Compute the score
+           
             e_t = (y[t]**2 - f[t])
             psi_t = self._rho_derivative(e_t, alpha_loss, c) 
             
             # Update volatility
             f[t+1] = omega + gamma * psi_t + beta * f[t]
-            #f[t+1] = max(f[t+1], 1e-12)  # Ensure positive volatility
+            
             
         return y, f[1:]
 
@@ -561,7 +561,7 @@ class Beta_t_GARCH11:
         ω, α, β, ν = params
 
         
-        # If any basic constraints are violated, return a large penalty
+      
         if ω <= 0 or α < 0 or β < 0 or α + β >= 1:
             return 1e10, None
         
@@ -569,12 +569,11 @@ class Beta_t_GARCH11:
         f = np.zeros(self.T)
         nll = 0.0
         
-        # Initialize f[0] at the sample variance of y (to avoid zero)
+    
         sample_var = np.var(self.y)
         f[0] = sample_var + 1e-8
         
-        # Precompute constants for the Student‐t density:
-        #   const_part = Γ((ν+1)/2) - Γ(ν/2) - 0.5*log[π (ν - 2)]
+       
         const_part = (
             gammaln( (ν + 1.0) / 2.0 ) 
             - gammaln( ν / 2.0 ) 
@@ -588,11 +587,7 @@ class Beta_t_GARCH11:
             # Standardized residual ε_t
             eps_t = yt / np.sqrt(ft)
             
-            # Student‐t log‐density at time t:
-            #   log p(y_t | f_t) 
-            #   = const_part 
-            #     - 0.5 * log(f_t) 
-            #     - ((ν + 1)/2) * log[ 1 + (y_t^2) / ((ν - 2) f_t) ].
+        
             logpdf_t = (
                 const_part 
                 - 0.5 * np.log(ft)
@@ -601,10 +596,9 @@ class Beta_t_GARCH11:
             )
 
 
-            nll -= logpdf_t  # accumulate negative log‐likelihood
+            nll -= logpdf_t  
             
-            # Now update f[t+1]:
-            #   f[t+1] = ω + α * [ (ν + 1) * ε_t^2 / (ν - 2 + ε_t^2) ] + β * f_t
+           
             numerator   = (ν + 1.0) * (eps_t * eps_t)
             denominator = (ν - 2.0) + (eps_t * eps_t)
             score_factor = numerator / denominator 
@@ -614,7 +608,7 @@ class Beta_t_GARCH11:
             if f[t + 1] <= 0:
                 return 1e10, None
         
-        # We also need to include the log‐likelihood contribution at t = T-1 (last point):
+        
         y_last = self.y[-1]
         f_last = f[-1]
         eps_last = y_last / np.sqrt(f_last)
@@ -637,11 +631,11 @@ class Beta_t_GARCH11:
           • β ≥ 0,
           • α + β < 1   (weak stationarity).
         """
-        # Initial guess: set ω ≈ 0.1 × Var(y), α = 0.05, β = 0.9
+     
         sample_var = np.var(self.y)
         init_params = np.array([0.07, 0.11, 0.8,6.0])  # [ω, α, β, ν]
         
-        # Box‐bounds: ω ∈ (1e-8, ∞), α ∈ [0, 1), β ∈ [0, 1)
+        
         bounds = [
             (1e-8, None),   # ω > 0
             (0.0, 0.9999),  # 0 ≤ α < 1
