@@ -553,8 +553,6 @@ def main():
 
     fitted_vol = model.fitted_volatility
 
-    plt.plot(true_vol)
-    plt.plot(fitted_vol)
-    plt.show()
+    model.plot_volatility(y, true_vol=true_vol)
     
 main()
