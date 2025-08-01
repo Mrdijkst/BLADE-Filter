@@ -15,7 +15,7 @@ The `Empirical/` folder includes code for a preliminary empirical application of
 - **Volatility modeling** has been tested using **GOOGLE stock prices**.
 - **Location modeling** has been applied to **day-ahead electricity spot prices** in **Denmark (DK)** and neighboring countries.
 
-### Dataset Information
+### Location model Dataset Information
 
 The dataset contains day-ahead electricity spot prices (in DKK) from the **Nord Pool** market. Prices are not updated on weekends or public holidays but are adjusted on the next working day. The market covers Denmark, Norway, Sweden, Finland, and Germany.
 
