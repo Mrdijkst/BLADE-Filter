@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from Location_model_QLE3 import RobustQLELocationModel
+
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
@@ -15,7 +15,10 @@ import warnings
 warnings.filterwarnings('ignore')
 # note this one uses e(y,f) = y_t - f_t for location model put use -\rho'(e)
 
-from Gasmodel import GAS_Model
+import sys
+sys.path.append("/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/")
+from Volatility_model_progress.All_models import GAS_Model, Beta_t_GARCH11
+
 
 class RobustQLELocationModel:
     
