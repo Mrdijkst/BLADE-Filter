@@ -857,18 +857,18 @@ def main():
     end_date = '2025-01-01'
     
     # Fetch data from Yahoo Finance
-    #data = data_from_yahoo(ticker, start_date, end_date)
+    data = data_from_yahoo(ticker, start_date, end_date)
     # take first difference of the data
-    #data = data.diff().dropna()
+    data = data.diff().dropna()
 
     #data.to_csv('data.csv')
 
-    data = pd.read_csv('data.csv')['close']
+    #data = pd.read_csv('data.csv')['close']
     #standardize the data
     data = (data - data.mean()) / data.std()
     print(data.shape)
 
-    pd.plot()
+    # pd.plot()
     
     
 
