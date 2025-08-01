@@ -891,8 +891,8 @@ def main():
     initial_params['omega'] = model_gas.params[0]
     initial_params['gamma'] = model_gas.params[1]
     initial_params['beta'] = model_gas.params[2]
-    initial_params['alpha_loss'] =1
-    initial_params['c'] = 1
+    initial_params['alpha_loss'] =1.2
+    initial_params['c'] = 0.8
 
     print(initial_params)
             
