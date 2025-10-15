@@ -5,7 +5,20 @@ import time
 from typing import Dict, Tuple, Optional
 import warnings
 warnings.filterwarnings('ignore')
+# ...existing code...
+import sys
+import pathlib
+
+# make the sibling folder "Volatility_model_progress" importable
+_repo_root = pathlib.Path(__file__).resolve().parents[1]   # repo root
+_vol_folder = _repo_root / "Volatility_model_progress"
+if str(_vol_folder) not in sys.path:
+    sys.path.insert(0, str(_vol_folder))
+
+# import without the .py extension and using exact filename case
 from Static_score_QLE9_best import RobustQLEVolatilityModel
+from All_models import Beta_t_GARCH11
+# ...existing code...
 
 
 def run_combined_monte_carlo_simulation(num_repetitions=500, sample_size=3000):

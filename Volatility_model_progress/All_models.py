@@ -376,7 +376,7 @@ class RobustQLEModel:
         init_params = np.array([initial_params[name] for name in self.param_names])
         
         # Run optimization
-        options = {'maxiter': maxiter, 'disp': True}
+        options = {'maxiter': maxiter, 'disp': False}
         
         # Different optimization methods may work better in different cases
         if method == 'Nelder-Mead':
@@ -418,7 +418,7 @@ class RobustQLEModel:
                 args=(y,),
                 strategy='best1bin',
                 maxiter=maxiter,
-                disp=True,
+                disp=False,
                 polish=True
             )
         
@@ -443,8 +443,8 @@ class RobustQLEModel:
         self.fitted_volatility = self._filter_volatility(y, param_array)
         self.residuals = y**2 - self.fitted_volatility
         
-        print(f"Optimization result: {result.message}")
-        print(f"Parameters: {self.params}")
+        #print(f"Optimization result: {result.message}")
+        #print(f"Parameters: {self.params}")
         
         return self.params
     
@@ -709,7 +709,7 @@ class GAS_Model:
         init_params = np.array([initial_params[name] for name in initial_params] )
         
         # Run optimization
-        options = {'maxiter': maxiter, 'disp': verbose}
+        options = {'maxiter': maxiter, 'disp': False}
 
         bounds = [(1e-8, None), (0, None), (0, 1-1e-6)]
 
