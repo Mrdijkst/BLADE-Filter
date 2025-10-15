@@ -13,7 +13,7 @@ warnings.filterwarnings('ignore')
 
 class RobustQLEModel:
     """
-    Robust QLE Volatility Model    
+    Robust QLE Volatility Model
     """
 
     def __init__(self, model_type: str = 'volatility', alpha_loss: float = None, c: float = None):
@@ -213,7 +213,7 @@ class RobustQLEModel:
             # Enforce positive volatility
             f[t+1] = max(f[t+1], 1e-12)
         
-        return f[1:]
+        return f[1:]    # note that it does not return the initial value, this can be changed to f[0:] if needed.
     
     def _compute_derivatives(self, y: np.ndarray, f: np.ndarray, params: np.ndarray) -> np.ndarray:
        
