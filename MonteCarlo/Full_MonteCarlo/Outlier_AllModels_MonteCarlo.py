@@ -28,12 +28,31 @@ def run_single_simulation(rep_id, sample_size=3000, dgp_df=5):
     }
 
     # Seed per replication for reproducibility
-    rep_seed = 42 + rep_id + 500
+    rep_seed = 42 + rep_id
 
-    # --- Simulate from the true QSD volatility DGP ---
-    dgp = RobustQLEModel(model_type='volatility', alpha_loss=true_params['alpha_loss'], c=true_params['c'])
-    dgp.params = {'omega': true_params['omega'], 'gamma': true_params['gamma'], 'beta': true_params['beta']}
-    y, true_vol = dgp.simulate(sample_size, dist='n', df=dgp_df, seed=rep_seed)
+    # Create a model with the true parameters for simulation
+    sim_model = RobustQLEModel(type = "volatilty" , alpha_loss=true_params['alpha_loss'])
+    sim_model.params = true_params
+    
+    # Simulate clean data
+    T = sample_size
+    y_clean, true_vol = sim_model.simulate(T, dist='n', df=7, seed=rep_seed)
+    
+    # Create a copy of the data with outliers
+    y_outliers = y_clean.copy()
+    
+    # Add outliers at different positions and with different magnitudes
+    np.random.seed(rep_seed)
+    outlier_positions = np.random.choice(range(500, T-500), 20, replace=False)
+    outlier_signs = np.random.choice([-1, 1], len(outlier_positions))
+    
+    for i, pos in enumerate(outlier_positions):
+        # Create outliers that are 6-10 standard deviations from the mean
+        local_std = np.sqrt(true_vol[pos])
+        y_outliers[pos] = outlier_signs[i] * np.random.uniform(6, 10) * local_std
+
+    y = y_outliers  # Use the outlier data for fitting
+    
 
     # Column layouts (match your parallel file’s style)
     qsd_fixed_columns = ['rep_id', 'omega', 'gamma', 'beta', 'c', 'convergence', 'rmse', 'mae', 'runtime']
