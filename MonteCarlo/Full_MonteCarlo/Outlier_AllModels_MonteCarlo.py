@@ -313,10 +313,10 @@ if __name__ == "__main__":
     )
 
     # Save 7 CSVs (one per model), in the exact naming pattern you requested
-    df_alpha_neginf.to_csv('monte_carlo_qsd_alpha_neginf_results_parallel.csv', index=False)
-    df_alpha0.to_csv('monte_carlo_qsd_alpha0_results_parallel.csv', index=False)
-    df_alpha1.to_csv('monte_carlo_qsd_alpha1_results_parallel.csv', index=False)
-    df_alpha2.to_csv('monte_carlo_qsd_alpha2_results_parallel.csv', index=False)
-    df_alpha_est.to_csv('monte_carlo_qsd_alpha_estimated_results_parallel.csv', index=False)
-    df_gas.to_csv('monte_carlo_gas_results_parallel.csv', index=False)
-    df_betat.to_csv('monte_carlo_betatgarch_results_parallel.csv', index=False)
+    df_alpha_neginf.to_csv('outlier_monte_carlo_qsd_alpha_neginf_results_parallel.csv', index=False)
+    df_alpha0.to_csv('outlier_monte_carlo_qsd_alpha0_results_parallel.csv', index=False)
+    df_alpha1.to_csv('outlier_monte_carlo_qsd_alpha1_results_parallel.csv', index=False)
+    df_alpha2.to_csv('outlier_monte_carlo_qsd_alpha2_results_parallel.csv', index=False)
+    df_alpha_est.to_csv('outlier_monte_carlo_qsd_alpha_estimated_results_parallel.csv', index=False)
+    df_gas.to_csv('outlier_monte_carlo_gas_results_parallel.csv', index=False)
+    df_betat.to_csv('outlier_monte_carlo_betatgarch_results_parallel.csv', index=False)
