@@ -8,6 +8,8 @@ The main implementation of the **Quasi Score-Driven (QSD) model using the Barron
 
 `Volatility_and_location_QSDmodel.py`
 
+All models used can be found in All_models.py
+
 ## Empirical Application
 
 The `Empirical/` folder includes code for a preliminary empirical application of the model. Specifically:

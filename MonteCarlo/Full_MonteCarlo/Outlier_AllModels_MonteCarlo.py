@@ -27,7 +27,7 @@ def run_single_simulation(rep_id, sample_size=3000, dgp_df=5):
     }
 
     # Seed per replication for reproducibility
-    rep_seed = 42 + rep_id
+    rep_seed = 42 + rep_id +500
 
     # Create a model with the true parameters for simulation
     sim_model = RobustQLEModel(model_type='volatility', alpha_loss=true_params['alpha_loss'])

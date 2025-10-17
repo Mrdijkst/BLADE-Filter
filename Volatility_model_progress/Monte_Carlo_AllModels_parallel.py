@@ -28,7 +28,7 @@ def run_single_simulation(rep_id, sample_size=3000, dgp_df=5):
     }
 
     # Seed per replication for reproducibility
-    rep_seed = 42 + rep_id + 500
+    rep_seed = 42 + rep_id 
 
     # --- Simulate from the true QSD volatility DGP ---
     dgp = RobustQLEModel(model_type='volatility', alpha_loss=true_params['alpha_loss'], c=true_params['c'])
