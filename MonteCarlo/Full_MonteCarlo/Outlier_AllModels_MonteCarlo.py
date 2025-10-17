@@ -8,11 +8,10 @@ import multiprocessing as mp
 from functools import partial
 from tqdm import tqdm
 
-# Import models from user's consolidated file
+
 from All_models import RobustQLEModel, GAS_Model, Beta_t_GARCH11
 
 
-# -------------------- Single replication worker --------------------
 def run_single_simulation(rep_id, sample_size=3000, dgp_df=5):
     """
     Run one Monte Carlo replication on a single simulated dataset and fit all models.
