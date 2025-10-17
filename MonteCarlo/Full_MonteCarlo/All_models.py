@@ -619,7 +619,7 @@ class Beta_t_GARCH11:
         )
         nll -= logpdf_last
         
-        return nll, f[1:]
+        return nll, f
 
     def fit(self):
         """
@@ -690,7 +690,7 @@ class GAS_Model:
             f[t] = omega + alpha * self.y[t-1]**2 + beta * f[t-1]
             # log-likelihood contribution
             ll += -0.5 * (np.log(2*np.pi) + np.log(f[t]) + self.y[t]**2 / f[t])
-        return -ll, f[1:]
+        return -ll, f
 
     def fit(self, start=None):
         """Estimate GARCH-equivalent GAS parameters by ML"""

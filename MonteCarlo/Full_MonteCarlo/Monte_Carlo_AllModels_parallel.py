@@ -206,7 +206,7 @@ def run_single_simulation(rep_id, sample_size=3000, dgp_df=5):
         conv = True
         rmse = float(np.sqrt(np.mean((fhat - true_vol)**2)))
         mae  = float(np.mean(np.abs(fhat - true_vol)))
-        omega, alpha_like, beta, nu = bt.x
+        omega, alpha_like, beta, nu = bt.params
     except Exception:
         conv, rmse, mae = False, np.nan, np.nan
         omega = alpha_like = beta = nu = np.nan

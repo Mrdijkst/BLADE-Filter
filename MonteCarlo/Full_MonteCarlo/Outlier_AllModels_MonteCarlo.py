@@ -213,7 +213,7 @@ def run_single_simulation(rep_id, sample_size=3000, dgp_df=5):
         omega = alpha_like = beta = np.nan
     runtime = time.time() - start
     res_gas.extend([omega, alpha_like, beta])
-    res_gas.extend([conv, rmse, mae, runtime])
+    res_gas.extend([conv, rmse, mae, runtime])  
 
     # ------------- beta_t–GARCH(1,1) -------------
     start = time.time()
@@ -224,7 +224,7 @@ def run_single_simulation(rep_id, sample_size=3000, dgp_df=5):
         conv = True
         rmse = float(np.sqrt(np.mean((fhat - true_vol)**2)))
         mae  = float(np.mean(np.abs(fhat - true_vol)))
-        omega, alpha_like, beta, nu = bt.x
+        omega, alpha_like, beta, nu = bt.params
     except Exception:
         conv, rmse, mae = False, np.nan, np.nan
         omega = alpha_like = beta = nu = np.nan
@@ -298,7 +298,7 @@ def run_parallel_monte_carlo_simulation(num_repetitions, sample_size, num_proces
 
 
 if __name__ == "__main__":
-    num_repetitions = 3
+    num_repetitions = 1
     sample_size = 4000
     num_cores = mp.cpu_count()
     print(f"Available CPU cores: {num_cores}")
