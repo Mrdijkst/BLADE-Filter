@@ -30,7 +30,7 @@ def run_single_simulation(rep_id, sample_size=3000, dgp_df=5):
     rep_seed = 42 + rep_id
 
     # Create a model with the true parameters for simulation
-    sim_model = RobustQLEModel(type = "volatilty" , alpha_loss=true_params['alpha_loss'])
+    sim_model = RobustQLEModel(model_type='volatility', alpha_loss=true_params['alpha_loss'])
     sim_model.params = true_params
     
     # Simulate clean data
@@ -298,7 +298,7 @@ def run_parallel_monte_carlo_simulation(num_repetitions, sample_size, num_proces
 
 
 if __name__ == "__main__":
-    num_repetitions = 5
+    num_repetitions = 3
     sample_size = 4000
     num_cores = mp.cpu_count()
     print(f"Available CPU cores: {num_cores}")
