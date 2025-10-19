@@ -35,7 +35,7 @@ def run_single_simulation(rep_id, sample_size=3000, dgp_df=5):
     
     # Simulate clean data
     T = sample_size
-    y_clean, true_vol = sim_model.simulate(T, dist='n', df=7, seed=rep_seed)
+    y_clean, true_vol = sim_model.simulate(T, dist='t', df=10, seed=rep_seed)
     
     # Create a copy of the data with outliers
     y_outliers = y_clean.copy()
@@ -298,7 +298,7 @@ def run_parallel_monte_carlo_simulation(num_repetitions, sample_size, num_proces
 
 
 if __name__ == "__main__":
-    num_repetitions = 1
+    num_repetitions = 300
     sample_size = 4000
     num_cores = mp.cpu_count()
     print(f"Available CPU cores: {num_cores}")
@@ -320,3 +320,13 @@ if __name__ == "__main__":
     df_alpha_est.to_csv('outlier_monte_carlo_qsd_alpha_estimated_results_parallel.csv', index=False)
     df_gas.to_csv('outlier_monte_carlo_gas_results_parallel.csv', index=False)
     df_betat.to_csv('outlier_monte_carlo_betatgarch_results_parallel.csv', index=False)
+
+    # ---- Print average RMSE per model ----
+    print("\nAverage RMSE per model:")
+    print(f"QSD α = -inf   : {df_alpha_neginf['rmse'].mean(skipna=True):.6f}")
+    print(f"QSD α = 0      : {df_alpha0['rmse'].mean(skipna=True):.6f}")
+    print(f"QSD α = 1      : {df_alpha1['rmse'].mean(skipna=True):.6f}")
+    print(f"QSD α = 2      : {df_alpha2['rmse'].mean(skipna=True):.6f}")
+    print(f"QSD α = est    : {df_alpha_est['rmse'].mean(skipna=True):.6f}")
+    print(f"GAS (Normal)   : {df_gas['rmse'].mean(skipna=True):.6f}")
+    print(f"Beta-t-GARCH   : {df_betat['rmse'].mean(skipna=True):.6f}")

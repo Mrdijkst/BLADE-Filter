@@ -368,7 +368,7 @@ class RobustQLEModel:
                     }
                     
             if self.alpha_loss is None:
-                    initial_params['alpha_loss'] = 1
+                    initial_params['alpha_loss'] = 0.85
             if self.c is None:
                     initial_params['c'] = 1.2
         
@@ -529,10 +529,8 @@ class RobustQLEModel:
             
         return y, f[1:]
 
+    
 class Beta_t_GARCH11:
-    """
-      Beta_t GARCH(1,1) model which is inherently a volatility model
-    """
     def __init__(self, y):
         """
         β_t GARCH(1,1) with Student‐t innovations:
@@ -560,7 +558,7 @@ class Beta_t_GARCH11:
         ω, α, β, ν = params
 
         
-      
+        # If any basic constraints are violated, return a large penalty
         if ω <= 0 or α < 0 or β < 0 or α + β >= 1:
             return 1e10, None
         
@@ -568,11 +566,12 @@ class Beta_t_GARCH11:
         f = np.zeros(self.T)
         nll = 0.0
         
-    
+        # Initialize f[0] at the sample variance of y (to avoid zero)
         sample_var = np.var(self.y)
         f[0] = sample_var + 1e-8
         
-       
+        # Precompute constants for the Student‐t density:
+        #   const_part = Γ((ν+1)/2) - Γ(ν/2) - 0.5*log[π (ν - 2)]
         const_part = (
             gammaln( (ν + 1.0) / 2.0 ) 
             - gammaln( ν / 2.0 ) 
@@ -586,7 +585,11 @@ class Beta_t_GARCH11:
             # Standardized residual ε_t
             eps_t = yt / np.sqrt(ft)
             
-        
+            # Student‐t log‐density at time t:
+            #   log p(y_t | f_t) 
+            #   = const_part 
+            #     - 0.5 * log(f_t) 
+            #     - ((ν + 1)/2) * log[ 1 + (y_t^2) / ((ν - 2) f_t) ].
             logpdf_t = (
                 const_part 
                 - 0.5 * np.log(ft)
@@ -595,9 +598,10 @@ class Beta_t_GARCH11:
             )
 
 
-            nll -= logpdf_t  
+            nll -= logpdf_t  # accumulate negative log‐likelihood
             
-           
+            # Now update f[t+1]:
+            #   f[t+1] = ω + α * [ (ν + 1) * ε_t^2 / (ν - 2 + ε_t^2) ] + β * f_t
             numerator   = (ν + 1.0) * (eps_t * eps_t)
             denominator = (ν - 2.0) + (eps_t * eps_t)
             score_factor = numerator / denominator 
@@ -607,7 +611,7 @@ class Beta_t_GARCH11:
             if f[t + 1] <= 0:
                 return 1e10, None
         
-        
+        # We also need to include the log‐likelihood contribution at t = T-1 (last point):
         y_last = self.y[-1]
         f_last = f[-1]
         eps_last = y_last / np.sqrt(f_last)
@@ -620,7 +624,6 @@ class Beta_t_GARCH11:
         nll -= logpdf_last
         
         return nll, f
-
     def fit(self):
         """
         Estimate (ω, α, β) by minimizing the negative log‐likelihood.
@@ -630,11 +633,11 @@ class Beta_t_GARCH11:
           • β ≥ 0,
           • α + β < 1   (weak stationarity).
         """
-     
+        # Initial guess: set ω ≈ 0.1 × Var(y), α = 0.05, β = 0.9
         sample_var = np.var(self.y)
         init_params = np.array([0.07, 0.11, 0.8,6.0])  # [ω, α, β, ν]
         
-        
+        # Box‐bounds: ω ∈ (1e-8, ∞), α ∈ [0, 1), β ∈ [0, 1)
         bounds = [
             (1e-8, None),   # ω > 0
             (0.0, 0.9999),  # 0 ≤ α < 1
@@ -646,6 +649,14 @@ class Beta_t_GARCH11:
             nll, _ = self._compute_nll_and_variances(p)
             return nll
         
+        #result = minimize(
+            objective,
+            init_params,
+            method='Nelder-mead',
+            bounds=bounds,
+            options={'disp': False, 'maxiter': 1000}
+        #)
+
         result = minimize(
             objective,
             init_params,
@@ -663,6 +674,9 @@ class Beta_t_GARCH11:
         After fitting, returns the in‐sample sequence {f_t}.
         """
         return self.fitted_f
+
+
+
 
 
 class GAS_Model:
