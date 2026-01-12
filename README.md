@@ -1,6 +1,6 @@
 # BLADE Repository
 
-This GitHub repository contains the code developed for my the Barron-Loss Adaptive Estimation
+This GitHub repository contains the code developed for "Barron-Loss Adaptive Estimation".
 
 ## Main Model
 
