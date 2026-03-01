@@ -4,9 +4,5 @@ This GitHub repository contains the code developed for "Barron-Loss Adaptive Est
 
 ## Main Model
 
-The main implementation of the **Quasi Score-Driven (QSD) model using the Barron loss function** can be found in:
-
-`Volatility_and_location_QSDmodel.py`
-
-All models used can be found in All_models.py
+The main implementation of the **Quasi Score-Driven (QSD) model using the Barron loss function** can be found in "All_Models.py". The Monte Carlo experiment done in section 3 can be found in Volatility_MonteCarlo.
 
