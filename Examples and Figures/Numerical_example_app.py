@@ -3,6 +3,7 @@ Numerical computations for Examples  illustrating Theorem 1 and 2.
 
 Example 1: clean dominance under P_t = t_4(0,1)
 Example 2: contaminated case with P_t = N(0,1), H_t = 3*t_4
+Example 3: comparing scaling factors via Delta-Delta-D for Y_t ~ N(0, vartheta) variance model
 """
 
 import numpy as np
