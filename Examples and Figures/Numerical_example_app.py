@@ -141,3 +141,117 @@ eps_upper = min(upper_bounds) if upper_bounds else 1.0
 print(f"\n  underline_eps   = {eps_lower:.4f}   (dominance preservation)")
 print(f"  bar_eps         = {eps_upper:.4f}   (PRADA preservation)")
 print(f"  Admissible      = [{eps_lower:.4f}, {eps_upper:.4f}]")
+
+# ============================================================
+# EXAMPLE 3: fisher scaling matrix comparison
+# ============================================================
+"""
+BLADE: Comparing Scaling Factors via Delta-Delta-D
+====================================================
+Model   : Y_t ~ N(0, vartheta),  conditional variance model
+Score   : s(y, vartheta) = y^2 / (2*vartheta^2) - 1 / (2*vartheta)
+Fisher  : I_{t-1} = 1 / (2*vartheta^2)
+
+Two updates phi_i(y, vartheta) = vartheta + alpha * S^(i) * s(y, vartheta):
+  phi_1 : S^(1) = I^{-1} = 2*vartheta^2   (inverse Fisher)
+  phi_2 : S^(2) = 1                        (identity)
+
+Evaluated at vartheta_{t|t-1} = 1 under P_t = N(0, 2).
+
+Three objects are computed:
+  1. Delta-Delta-D : contraction dominance difference  -> threshold alpha*
+  2. Delta-D(phi_1): individual divergence reduction   -> PRADA bound alpha_bar_1
+  3. Delta-D(phi_2): individual divergence reduction   -> PRADA bound alpha_bar_2
+"""
+
+import numpy as np
+from scipy.integrate import quad
+from scipy.optimize import brentq
+
+# ── Parameters ────────────────────────────────────────────────────────────────
+sigma2_true = 2.0    # P_t = N(0, 2)
+S1          = 2.0    # inverse Fisher scaling at vartheta=1: S^(1) = 2*1^2 = 2
+S2          = 1.0    # identity scaling
+
+# ── Updated variances ─────────────────────────────────────────────────────────
+# s(ycheck, 1) = 1/2 * (ycheck^2 - 1)
+# phi_i(ycheck, 1) = 1 + alpha * S^(i) * s(ycheck, 1)
+
+def phi1(ycheck, alpha):
+    return 1.0 + alpha * S1 * 0.5 * (ycheck**2 - 1)   # = 1 + alpha*(ycheck^2 - 1)
+
+def phi2(ycheck, alpha):
+    return 1.0 + alpha * S2 * 0.5 * (ycheck**2 - 1)   # = 1 + (alpha/2)*(ycheck^2 - 1)
+
+# ── Density of P_t = N(0, sigma2_true) ───────────────────────────────────────
+def p(ycheck):
+    return np.exp(-ycheck**2 / (2 * sigma2_true)) / np.sqrt(2 * np.pi * sigma2_true)
+
+# ── Object 1: Delta-Delta-D ───────────────────────────────────────────────────
+# Definition 3 with R_t = P_t, after factoring out the inner expectation over Y_t:
+#
+#   Delta-Delta-D = E_{P_t x P_t}[LogS(phi_1(Ycheck, 1), Y) - LogS(phi_2(Ycheck, 1), Y)]
+#
+# Inner expectation over Y_t gives S_bar(vartheta', P_t) = -1/2*log(2*pi*vartheta') - 1/vartheta'.
+# Taking the difference between phi_1 and phi_2, the -1/2*log(2*pi) terms cancel, leaving:
+#
+#   integrand = [ -1/2 * log(phi1/phi2) - 1/phi1 + 1/phi2 ] * p(ycheck)
+
+def integrand_ddD(ycheck, alpha):
+    v1 = phi1(ycheck, alpha)
+    v2 = phi2(ycheck, alpha)
+    return (-0.5 * np.log(v1 / v2) - 1.0 / v1 + 1.0 / v2) * p(ycheck)
+
+def delta_delta_D(alpha):
+    val, _ = quad(integrand_ddD, -np.inf, np.inf, args=(alpha,))
+    return val
+
+# ── Object 2: Delta-D (individual divergence reduction) ──────────────────────
+# Delta-D^{P_t}(phi_i) = E_{P_t x P_t}[LogS(phi_i(Ycheck, 1), Y) - LogS(1, Y)]
+#
+# Inner expectation gives S_bar(vartheta', P_t) - S_bar(1, P_t).
+# With sigma2_true = 2:
+#   S_bar(vartheta', P_t) = -1/2*log(2*pi*vartheta') - 1/vartheta'
+#   S_bar(1,         P_t) = -1/2*log(2*pi)           - 1
+# Difference: -1/2*log(vartheta') - 1/vartheta' + 1
+#
+#   integrand = [ -1/2 * log(vp) - 1/vp + 1 ] * p(ycheck)
+
+def integrand_dD(ycheck, alpha, S):
+    vp = 1.0 + alpha * S * 0.5 * (ycheck**2 - 1)
+    return (-0.5 * np.log(vp) - 1.0 / vp + 1.0) * p(ycheck)
+
+def delta_D(alpha, S):
+    val, _ = quad(integrand_dD, -np.inf, np.inf, args=(alpha, S))
+    return val
+
+# ── Find thresholds ───────────────────────────────────────────────────────────
+# Grid capped at alpha < 1: at alpha = 1, phi_1(0, 1) = 0 making log undefined.
+# All thresholds of interest (alpha* ~ 0.109, alpha_bar_1 ~ 0.195) are well below 1.
+
+alpha_grid = np.linspace(1e-4, 0.99, 2000)
+
+def find_zero(f, grid):
+    vals = np.array([f(a) for a in grid])
+    idx  = np.where(np.diff(np.sign(vals)) < 0)[0][0]
+    return brentq(f, grid[idx], grid[idx + 1], xtol=1e-10)
+
+alpha_star  = find_zero(delta_delta_D,            alpha_grid)
+alpha_bar_1 = find_zero(lambda a: delta_D(a, S1), alpha_grid)
+alpha_bar_2 = find_zero(lambda a: delta_D(a, S2), alpha_grid)
+alpha_bar   = min(alpha_bar_1, alpha_bar_2)
+
+# ── Results ───────────────────────────────────────────────────────────────────
+print("=" * 55)
+print("BLADE scaling comparison: N(0, vartheta) variance model")
+print("=" * 55)
+print(f"  Dominance threshold   alpha*     = {alpha_star:.4f}")
+print(f"  PRADA bound phi_1     alpha_bar1 = {alpha_bar_1:.4f}")
+print(f"  PRADA bound phi_2     alpha_bar2 = {alpha_bar_2:.4f}")
+print(f"  Binding PRADA bound   alpha_bar  = {alpha_bar:.4f}")
+print(f"  Ratio alpha_bar2 / alpha_bar1    = {alpha_bar_2 / alpha_bar_1:.4f}")
+print()
+print(f"  Dominance interval : (0, {alpha_star:.3f})")
+print(f"  PRADA interval     : (0, {alpha_bar:.3f})")
+print(f"  Inclusion (0,{alpha_star:.3f}) subset (0,{alpha_bar:.3f}): "
+      f"{alpha_star < alpha_bar}")
