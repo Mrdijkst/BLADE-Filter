@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 
 
 inu = 10
-LossMat_1 = np.load('/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/MonteCarlo/MonteCarlo2/Volatility_FINAL/eps1/mLoss_eps1_dNu10_Eps1.0.npy')
-LossMat_99 = np.load('/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/MonteCarlo/MonteCarlo2/Volatility_FINAL/eps0.99/mLoss_eps0.99_dNu10_Eps0.99.npy')
-LossMat_98 = np.load('/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/MonteCarlo/MonteCarlo2/Volatility_FINAL/eps0.98/mLoss_eps0.98_dNu10_Eps0.98.npy')
-LossMat_97 = np.load('/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/MonteCarlo/MonteCarlo2/Volatility_FINAL/eps0.97/mLoss_eps0.97_dNu10_Eps0.97.npy')
+LossMat_1 = np.load('/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/Volatility_MonteCarlo/Volatility_Eps1/mLoss/mLoss_eps1_dNu10_Eps1.0.npy')
+LossMat_99 = np.load('/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/Volatility_MonteCarlo/Volatility_Eps99/mLoss/mLoss_eps0.99_dNu10_Eps0.99.npy')
+LossMat_98 = np.load('/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/Volatility_MonteCarlo/Volatility_Eps98/mLoss/mLoss_eps0.98_dNu10_Eps0.98.npy')
+LossMat_97 = np.load('/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/Volatility_MonteCarlo/Volatility_Eps97/mLoss/mLoss_eps0.97_dNu10_Eps0.97.npy')
 
 
 iLenGamma1Grid_eps1 = 200
@@ -168,12 +168,12 @@ for gamma_star in gamma_star_list:
             fontsize=11)
 
 
-plt.xlabel(r"$\gamma_1$", fontsize=13)
+plt.xlabel(r"$\gamma_{\mathrm{fil}}$", fontsize=13)
 plt.ylabel(r"Average " + loss_name, fontsize=13)
 plt.legend(frameon=False)
 plt.tight_layout()
 
 # Save as vector PDF (LaTeX ready)s
 # save to '/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/MonteCarlo/MonteCarlo2/Volatility_FINAL/Pictures'
-plt.savefig("/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/MonteCarlo/MonteCarlo2/Volatility_FINAL/Pictures/MSE_all_eps.pdf", format="pdf")
+plt.savefig("/Users/MathijsDijkstra/University/Bachelors/Third year Econometrics/Robust-QLE-Model/Volatility_MonteCarlo/Volatility_Eps1/mLoss/mLoss_eps1_dNu10_Eps1.0.pdf", format="pdf")
 plt.show()

@@ -7,3 +7,5 @@ The main implementation of the Quasi Score-Driven (QSD) model using the Barron l
 The Monte Carlo experiment from Section 3 can be found in:
 
 - [`Volatility_MonteCarlo`](./Volatility_MonteCarlo/)
+
+#Note: our models run on Numpy 2.1.3

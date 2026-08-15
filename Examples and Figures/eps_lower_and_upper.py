@@ -9,8 +9,7 @@ DGP: Gaussian location model, MSE evaluation (quadratic scoring rule).
 Contamination: H_t = 3 * t_4 (Student-t, 4 df, scale 3), symmetric around theta_pred.
 """
 
-import matplotlib
-matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 import math
@@ -122,3 +121,4 @@ ax.legend(fontsize=9, ncol=2, loc='upper right')
 
 plt.tight_layout()
 
+plt.show()

@@ -134,7 +134,7 @@ def main():
    
     # Initialization
     bOrderMPI = False           # order task distribution [sequentially if true]
-    vGamma1Grid = np.linspace(-4, 2.5, iLenGamma1Grid)
+    vGamma1Grid = np.array(-4, 2.5, iLenGamma1Grid)
     sExperimentName = sExperiment + '_dNu' + str(dNu) + '_Eps' + str(dEps)
     
   
